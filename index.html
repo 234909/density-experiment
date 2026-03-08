@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金属密度测量在线物理实验</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .experiment-info {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #e8f4fd;
+            border-radius: 8px;
+        }
+        
+        .experiment-info h3 {
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+        
+        .metal-select {
+            margin-bottom: 30px;
+        }
+        
+        .metal-select label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #34495e;
+            margin-right: 15px;
+        }
+        
+        .metal-select select {
+            padding: 8px 15px;
+            font-size: 16px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .experiment-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .measurement-card {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .measurement-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+        
+        .control-group input, .control-group button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .control-group button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .control-group button:hover {
+            background-color: #2980b9;
+        }
+        
+        .result-area {
+            padding: 20px;
+            background: #f1f9ff;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .result-area h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .result-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .result-item h4 {
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        
+        .result-item .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2980b9;
+        }
+        
+        .theory-value {
+            color: #e74c3c !important;
+        }
+        
+        .unit {
+            font-size: 16px;
+            color: #95a5a6;
+            margin-left: 5px;
+        }
+        
+        .reset-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto 0;
+            padding: 12px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>金属密度测量在线物理实验</h1>
+        
+        <div class="experiment-info">
+            <h3>实验原理</h3>
+            <p>密度是物质的特性之一，计算公式为：ρ = m/V，其中ρ表示密度（单位：g/cm³），m表示质量（单位：g），V表示体积（单位：cm³）。</p>
+            <p>本实验通过模拟测量金、铁、铝、铜四种金属的质量和体积，计算其密度，并与理论值对比。</p>
+        </div>
+        
+        <div class="metal-select">
+            <label for="metalType">选择待测金属：</label>
+            <select id="metalType">
+                <option value="gold">金 (Au)</option>
+                <option value="iron">铁 (Fe)</option>
+                <option value="aluminum">铝 (Al)</option>
+                <option value="copper">铜 (Cu)</option>
+            </select>
+        </div>
+        
+        <div class="experiment-area">
+            <div class="measurement-card">
+                <h3>1. 测量质量 (m)</h3>
+                <div class="control-group">
+                    <label>模拟天平称量（点击按钮生成随机质量值）：</label>
+                    <button id="measureMassBtn">开始称量</button>
+                </div>
+                <div class="control-group">
+                    <label>测量结果（g）：</label>
+                    <input type="number" id="massInput" readonly placeholder="点击上方按钮获取质量值">
+                </div>
+            </div>
+            
+            <div class="measurement-card">
+                <h3>2. 测量体积 (V)</h3>
+                <div class="control-group">
+                    <label>模拟排水法测量（点击按钮生成随机体积值）：</label>
+                    <button id="measureVolumeBtn">开始测量</button>
+                </div>
+                <div class="control-group">
+                    <label>测量结果（cm³）：</label>
+                    <input type="number" id="volumeInput" readonly placeholder="点击上方按钮获取体积值">
+                </div>
+            </div>
+            
+            <div class="measurement-card">
+                <h3>3. 计算密度 (ρ)</h3>
+                <div class="control-group">
+                    <label>自动计算密度：</label>
+                    <button id="calculateDensityBtn">计算密度</button>
+                </div>
+                <div class="control-group">
+                    <label>计算结果（g/cm³）：</label>
+                    <input type="number" id="densityInput" readonly placeholder="先完成质量和体积测量">
+                </div>
+            </div>
+        </div>
+        
+        <div class="result-area">
+            <h3>实验结果对比</h3>
+            <div class="result-grid">
+                <div class="result-item">
+                    <h4>测量质量</h4>
+                    <div class="value" id="showMass">0<span class="unit">g</span></div>
+                </div>
+                <div class="result-item">
+                    <h4>测量体积</h4>
+                    <div class="value" id="showVolume">0<span class="unit">cm³</span></div>
+                </div>
+                <div class="result-item">
+                    <h4>计算密度</h4>
+                    <div class="value" id="showDensity">0<span class="unit">g/cm³</span></div>
+                </div>
+                <div class="result-item">
+                    <h4>理论密度</h4>
+                    <div class="value theory-value" id="showTheoryDensity">0<span class="unit">g/cm³</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="reset-btn" id="resetBtn">重置实验</button>
+    </div>
+
+    <script>
+        // 四种金属的理论密度值（g/cm³）
+        const metalDensity = {
+            gold: 19.3,
+            iron: 7.9,
+            aluminum: 2.7,
+            copper: 8.9
+        };
+        
+        // 获取DOM元素
+        const metalSelect = document.getElementById('metalType');
+        const measureMassBtn = document.getElementById('measureMassBtn');
+        const measureVolumeBtn = document.getElementById('measureVolumeBtn');
+        const calculateDensityBtn = document.getElementById('calculateDensityBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        const massInput = document.getElementById('massInput');
+        const volumeInput = document.getElementById('volumeInput');
+        const densityInput = document.getElementById('densityInput');
+        
+        const showMass = document.getElementById('showMass');
+        const showVolume = document.getElementById('showVolume');
+        const showDensity = document.getElementById('showDensity');
+        const showTheoryDensity = document.getElementById('showTheoryDensity');
+        
+        // 初始化显示理论密度
+        updateTheoryDensity();
+        
+        // 选择金属时更新理论密度
+        metalSelect.addEventListener('change', updateTheoryDensity);
+        
+        // 测量质量按钮点击事件
+        measureMassBtn.addEventListener('click', function() {
+            const selectedMetal = metalSelect.value;
+            // 根据不同金属生成合理的质量范围（模拟真实实验的质量值）
+            let minMass, maxMass;
+            switch(selectedMetal) {
+                case 'gold':
+                    minMass = 50; maxMass = 200;
+                    break;
+                case 'iron':
+                    minMass = 20; maxMass = 100;
+                    break;
+                case 'aluminum':
+                    minMass = 10; maxMass = 80;
+                    break;
+                case 'copper':
+                    minMass = 30; maxMass = 120;
+                    break;
+            }
+            // 生成随机质量值，保留1位小数
+            const mass = (Math.random() * (maxMass - minMass) + minMass).toFixed(1);
+            massInput.value = mass;
+            showMass.innerHTML = mass + '<span class="unit">g</span>';
+        });
+        
+        // 测量体积按钮点击事件
+        measureVolumeBtn.addEventListener('click', function() {
+            const selectedMetal = metalSelect.value;
+            // 根据不同金属生成合理的体积范围
+            let minVolume, maxVolume;
+            switch(selectedMetal) {
+                case 'gold':
+                    minVolume = 2; maxVolume = 10;
+                    break;
+                case 'iron':
+                    minVolume = 2; maxVolume = 12;
+                    break;
+                case 'aluminum':
+                    minVolume = 3; maxVolume = 30;
+                    break;
+                case 'copper':
+                    minVolume = 3; maxVolume = 14;
+                    break;
+            }
+            // 生成随机体积值，保留1位小数
+            const volume = (Math.random() * (maxVolume - minVolume) + minVolume).toFixed(1);
+            volumeInput.value = volume;
+            showVolume.innerHTML = volume + '<span class="unit">cm³</span>';
+        });
+        
+        // 计算密度按钮点击事件
+        calculateDensityBtn.addEventListener('click', function() {
+            const mass = parseFloat(massInput.value);
+            const volume = parseFloat(volumeInput.value);
+            
+            // 验证输入值
+            if (isNaN(mass) || isNaN(volume) || volume === 0) {
+                alert('请先完成质量和体积的测量，且体积不能为0！');
+                return;
+            }
+            
+            // 计算密度，保留1位小数
+            const density = (mass / volume).toFixed(1);
+            densityInput.value = density;
+            showDensity.innerHTML = density + '<span class="unit">g/cm³</span>';
+        });
+        
+        // 重置实验按钮点击事件
+        resetBtn.addEventListener('click', function() {
+            massInput.value = '';
+            volumeInput.value = '';
+            densityInput.value = '';
+            
+            showMass.innerHTML = '0<span class="unit">g</span>';
+            showVolume.innerHTML = '0<span class="unit">cm³</span>';
+            showDensity.innerHTML = '0<span class="unit">g/cm³</span>';
+            
+            // 重置下拉框到第一个选项
+            metalSelect.selectedIndex = 0;
+            updateTheoryDensity();
+        });
+        
+        // 更新理论密度显示
+        function updateTheoryDensity() {
+            const selectedMetal = metalSelect.value;
+            const theoryDensity = metalDensity[selectedMetal];
+            showTheoryDensity.innerHTML = theoryDensity + '<span class="unit">g/cm³</span>';
+        }
+    </script>
+</body>
+</html>
